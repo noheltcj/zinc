@@ -1,0 +1,14 @@
+*.iml
+.gradle/
+/local.properties
+/gradle.properties
+/.idea
+.DS_Store
+out/
+build/
+/captures
+/local
+*.orig
+/projectFilesBackup*
+/reports
+/private_tools
