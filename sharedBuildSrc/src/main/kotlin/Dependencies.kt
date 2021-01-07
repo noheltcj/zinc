@@ -18,8 +18,6 @@ object Dependencies {
 
     val project = Project
     object Project {
-        const val core = "com.noheltcj.zinc:core:${Versions.zinc}"
-
         val kotlin = Kotlin
         object Kotlin {
             const val annotationProcessingEmbedded = "org.jetbrains.kotlin:kotlin-annotation-processing-embeddable:${Versions.kotlin}"

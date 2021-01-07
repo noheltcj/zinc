@@ -1,3 +1,5 @@
+import com.noheltcj.shared.build.loadStringProperty
+
 plugins {
     id("defaults")
 }
@@ -14,13 +16,28 @@ buildscript {
 subprojects {
     apply(plugin = "defaults")
 
-    pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {
+    pluginManager.withPlugin(Dependencies.targets.jvm) {
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).configureEach {
             kotlinOptions {
                 jvmTarget = "1.8"
                 allWarningsAsErrors = true
             }
         }
+    }
+
+    pluginManager.withPlugin(Dependencies.plugins.mavenPublish) {
+        val mavenPublish = requireNotNull(extensions.findByType(com.vanniktech.maven.publish.MavenPublishPluginExtension::class))
+
+        mavenPublish.nexus {
+            groupId = loadStringProperty("zincGroupId")
+        }
+
+        val uploadArchivesTarget: com.vanniktech.maven.publish.MavenPublishTarget = requireNotNull(
+            mavenPublish.targets.findByName("uploadArchives")
+        )
+
+        uploadArchivesTarget.releaseRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+        uploadArchivesTarget.snapshotRepositoryUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
     }
 
     configurations.all {

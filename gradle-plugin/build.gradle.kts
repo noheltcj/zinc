@@ -37,6 +37,20 @@ pluginBundle {
     tags = listOf("kotlin", "kotlin-compiler-plugin")
 }
 
+mavenPublish {
+    nexus {
+        groupId = loadStringProperty("zincGroupId")
+    }
+
+    targets {
+        val uploadArchivesTarget: com.vanniktech.maven.publish.MavenPublishTarget = requireNotNull(
+            findByName("uploadArchives")
+        )
+
+        uploadArchivesTarget.releaseRepositoryUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+    }
+}
+
 dependencies {
     implementation(Dependencies.plugins.kotlinGradle)
     implementation(Dependencies.project.kotlin.gradlePluginApi)

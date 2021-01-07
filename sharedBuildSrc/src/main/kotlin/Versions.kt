@@ -1,6 +1,4 @@
 object Versions {
-    const val zinc = "0.0.1-SNAPSHOT"
-
     const val autoService = "1.0-rc7"
 
     const val kotlin = "1.4.21"

@@ -26,5 +26,6 @@ zinc {
   enabled = true
 
   // defaults to setOf("main")
-  mainSourceSetNames = setOf("main", "anotherSourceSet") }
+  mainSourceSetNames = setOf("main", "anotherSourceSet")
+}
 ```
