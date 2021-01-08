@@ -1,7 +1,7 @@
 import com.noheltcj.zinc.shared.build.loadStringProperty
 
 plugins {
-    id("defaults")
+    id("com.noheltcj.zinc.defaults")
 }
 
 buildscript {
@@ -47,7 +47,7 @@ val uploadArchives: Task by tasks.getting {
 }
 
 subprojects {
-    apply(plugin = "defaults")
+    apply(plugin = "com.noheltcj.zinc.defaults")
 
     pluginManager.withPlugin(Dependencies.targets.jvm) {
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).configureEach {

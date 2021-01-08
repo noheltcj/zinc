@@ -6,17 +6,9 @@ repositories {
     jcenter()
 }
 
-sourceSets {
-    main {
-        kotlin {
-            
-        }
-    }
-}
-
 gradlePlugin {
     plugins.register("defaults") {
-        id = "defaults"
+        id = "com.noheltcj.zinc.defaults"
         implementationClass = "com.noheltcj.zinc.shared.build.GlobalDefaultsPlugin"
     }
 }

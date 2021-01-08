@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id("defaults")
+    id("com.noheltcj.zinc.defaults")
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.gmazzo.buildconfig") version "2.0.2"
 
