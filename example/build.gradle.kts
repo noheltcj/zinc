@@ -1,6 +1,6 @@
 plugins {
     application
-    id("com.noheltcj.zinc.gradle-plugin")
+    id("com.noheltcj.zinc")
 }
 
 zinc {

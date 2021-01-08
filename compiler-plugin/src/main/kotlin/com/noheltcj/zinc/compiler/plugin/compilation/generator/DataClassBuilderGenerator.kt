@@ -94,15 +94,17 @@ ${classSource(ktClass)}
     }
 
     private fun headerAndPackageSource(psiClass: KtClassOrObject) = generatePackageName(psiClass)
-        .takeIf(String::isNotEmpty)
+        .takeIf { pkg -> pkg.isNotEmpty() && pkg != "<root>" }
         ?.let { "$generatedDisclaimer\n\npackage $it" }
         ?: generatedDisclaimer
 
     private fun importsSource(module: ModuleDescriptor, psiClass: KtClassOrObject) =
         filterToKtUserTypeConstructorParams(psiClass)
+            .asSequence()
             .map { "import ${requireNotNull(it.typeReference).requireFqName(module)}" }
             .plus("import com.noheltcj.zinc.core.BuilderProperty")
             .plus("import com.noheltcj.zinc.core.ZincBuilder")
+            .distinct()
             .sorted()
             .joinToString(separator = "\n")
 
@@ -164,7 +166,7 @@ ${classSource(ktClass)}
                     }
                 }\""
         }.plus(
-            "\t\tinline fun build${className}(crossinline block: $builderName.() -> Unit): $className =\n" +
+            "\t\t@JvmStatic inline fun build${className}(crossinline block: $builderName.() -> Unit): $className =\n" +
                 "\t\t\t$builderName().apply(block).build()\n" +
                 "\t}"
         )

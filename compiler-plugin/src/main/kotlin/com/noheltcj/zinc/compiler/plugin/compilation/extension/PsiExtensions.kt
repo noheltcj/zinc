@@ -198,7 +198,13 @@ internal fun ModuleDescriptor.findClassOrTypeAlias(
     packageName: FqName,
     className: String
 ): ClassifierDescriptorWithTypeParameters? {
-    resolveClassByFqName(FqName("$packageName.$className"), NoLookupLocation.FROM_BACKEND)
+    resolveClassByFqName(FqName("${
+        if (packageName.isRoot) {
+            ""
+        } else {
+            "${packageName.asString()}."
+        }
+    }$className"), NoLookupLocation.FROM_BACKEND)
         ?.let { return it }
 
     findTypeAliasAcrossModuleDependencies(ClassId(packageName, Name.identifier(className)))
