@@ -6,6 +6,14 @@ repositories {
     jcenter()
 }
 
+sourceSets {
+    main {
+        java {
+            srcDir("src/main/kotlin")
+        }
+    }
+}
+
 gradlePlugin {
     plugins.register("defaults") {
         id = "defaults"
