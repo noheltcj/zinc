@@ -14,7 +14,7 @@ import org.spekframework.spek2.Spek
 import org.spekframework.spek2.lifecycle.CachingMode
 import org.spekframework.spek2.style.specification.describe
 
-object ZincIntegrationTest: Spek({
+object ZincIntegrationTest : Spek({
     val arguments by memoized(CachingMode.TEST) { ArgumentsBuilder() }
     val compilation by memoized(CachingMode.TEST) { createCompilation() }
 
@@ -70,7 +70,7 @@ object ZincIntegrationTest: Spek({
 
                 it("should generate in the specified directory") {
                     compilation.compile()
-                    assertThat(File("${sourcesDir}/com/noheltcj/zinc/entity/WidgetBuilder.kt").exists)
+                    assertThat(File("$sourcesDir/com/noheltcj/zinc/entity/WidgetBuilder.kt").exists)
                         .isTrue()
                 }
             }

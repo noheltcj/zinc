@@ -1,9 +1,9 @@
 package com.noheltcj.zinc.compiler.plugin.compilation.generator
 
+import java.io.File
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingContext
-import java.io.File
 
 interface CodeGenerator {
     fun shouldGenerate(
@@ -29,7 +29,7 @@ interface CodeGenerator {
     }
 }
 
-//class TestBuilder {
+// class TestBuilder {
 //    private var _id: String by BuilderProperty(
 //        defaultValue = "",
 //        propertyDescription = idDescription
@@ -56,4 +56,4 @@ interface CodeGenerator {
 //            TestBuilder().id("hi").build()
 //        }
 //    }
-//}
+// }

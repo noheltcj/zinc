@@ -2,6 +2,7 @@ package com.noheltcj.zinc.compiler.plugin.analysis
 
 import com.noheltcj.zinc.compiler.plugin.ServiceLocator
 import com.noheltcj.zinc.compiler.plugin.compilation.generator.CodeGenerator
+import java.io.File
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project
 import org.jetbrains.kotlin.com.intellij.psi.PsiManager
@@ -13,7 +14,6 @@ import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.resolve.BindingTrace
 import org.jetbrains.kotlin.resolve.jvm.extensions.AnalysisHandlerExtension
-import java.io.File
 
 internal class ZincAnalysisHandlerExtension(
     private val generators: Set<CodeGenerator> = ServiceLocator.generators,

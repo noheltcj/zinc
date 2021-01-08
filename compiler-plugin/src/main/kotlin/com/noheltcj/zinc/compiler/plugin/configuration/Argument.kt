@@ -1,9 +1,9 @@
 package com.noheltcj.zinc.compiler.plugin.configuration
 
+import java.io.File
 import org.jetbrains.kotlin.compiler.plugin.AbstractCliOption
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.CompilerConfigurationKey
-import java.io.File
 
 sealed class Argument<T : Any>(
     override val optionName: String,
