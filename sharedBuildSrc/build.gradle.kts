@@ -8,8 +8,8 @@ repositories {
 
 sourceSets {
     main {
-        java {
-            srcDir("src/main/kotlin")
+        kotlin {
+            
         }
     }
 }
