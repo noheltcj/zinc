@@ -22,12 +22,20 @@ val test: Task by tasks.getting {
     // dependsOn(testGradlePlugin)
 }
 
-val lintGradlePlugin: Task by tasks.creating {
+val ktlintCheckGradlePlugin: Task by tasks.creating {
     dependsOn(gradle.includedBuild("gradle-plugin").task(":ktlintCheck"))
 }
 
 val ktlintCheck: Task by tasks.getting {
-    dependsOn(lintGradlePlugin)
+    dependsOn(ktlintCheckGradlePlugin)
+}
+
+val ktlintFormatGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":ktlintFormat"))
+}
+
+val ktlintFormat: Task by tasks.getting {
+    dependsOn(ktlintFormatGradlePlugin)
 }
 
 val uploadGradlePluginArchives: Task by tasks.creating {

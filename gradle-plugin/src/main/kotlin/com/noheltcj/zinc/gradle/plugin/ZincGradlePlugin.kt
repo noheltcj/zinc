@@ -1,11 +1,15 @@
 package com.noheltcj.zinc.gradle.plugin
 
 import com.noheltcj.zinc.gradle_plugin.BuildConfig
+import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
 import org.gradle.plugins.ide.idea.IdeaPlugin
-import org.jetbrains.kotlin.gradle.plugin.*
-import java.io.File
+import org.jetbrains.kotlin.gradle.plugin.FilesSubpluginOption
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
+import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
+import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
+import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
 class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
 
@@ -66,7 +70,7 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
         return project.provider {
             listOf(
                 SubpluginOption(key = "convert_data_classes", value = extension.enabled.toString()),
-                FilesSubpluginOption(key = "generated_sources_directory", files = setOf(generatedSourcesDirectory)),
+                FilesSubpluginOption(key = "generated_sources_directory", files = setOf(generatedSourcesDirectory))
             )
         }
     }
