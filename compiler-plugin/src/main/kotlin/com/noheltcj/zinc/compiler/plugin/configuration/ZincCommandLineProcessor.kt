@@ -15,7 +15,7 @@ class ZincCommandLineProcessor : CommandLineProcessor {
 
     override val pluginId: String = Properties.compilerPluginId
 
-    override val pluginOptions: Collection<AbstractCliOption> = Options.values()
+    override val pluginOptions: Collection<AbstractCliOption> = Option.values()
         .map { option -> Argument.fromOptionKey(option.key) }
 
     override fun processOption(

@@ -1,4 +1,4 @@
-import com.noheltcj.shared.build.loadStringProperty
+import com.noheltcj.zinc.shared.build.loadStringProperty
 
 buildscript {
     dependencies {

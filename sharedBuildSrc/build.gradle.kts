@@ -11,7 +11,7 @@ repositories {
 gradlePlugin {
     plugins.register("defaults") {
         id = "defaults"
-        implementationClass = "com.noheltcj.shared.build.GlobalDefaultsPlugin"
+        implementationClass = "com.noheltcj.zinc.shared.build.GlobalDefaultsPlugin"
     }
 }
 

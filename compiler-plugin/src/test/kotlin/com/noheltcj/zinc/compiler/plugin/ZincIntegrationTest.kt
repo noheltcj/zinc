@@ -7,7 +7,7 @@ import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithBuildable
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithId
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithMultipleSameTypeFields
 import com.noheltcj.zinc.compiler.plugin.InputSources.javaWidget
-import com.noheltcj.zinc.compiler.plugin.configuration.Options
+import com.noheltcj.zinc.compiler.plugin.configuration.Option
 import com.tschuchort.compiletesting.KotlinCompilation
 import org.jetbrains.kotlin.konan.file.File
 import org.spekframework.spek2.Spek
@@ -42,7 +42,7 @@ object ZincIntegrationTest: Spek({
 
             it("should have a useful message") {
                 assertThat(compilation.compile().messages)
-                    .contains("${TestConstants.requiredPluginOptionPrefix}:${Options.GENERATED_SOURCES_DIR.key}")
+                    .contains("${TestConstants.requiredPluginOptionPrefix}:${Option.GENERATED_SOURCES_DIR.key}")
             }
         }
 
