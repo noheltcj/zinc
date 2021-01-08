@@ -55,6 +55,9 @@ dependencies {
     implementation(Dependencies.plugins.kotlinGradle)
     implementation(Dependencies.project.kotlin.gradlePluginApi)
     implementation(Dependencies.project.kotlin.stdlib)
+
+    testImplementation(Dependencies.test.compileTesting)
+    testImplementation(Dependencies.test.mockito)
 }
 
 pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {

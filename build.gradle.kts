@@ -13,6 +13,31 @@ buildscript {
     }
 }
 
+val testGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":test"))
+}
+
+val test: Task by tasks.getting {
+    // TODO: Re-enable once these tests are valuable
+    // dependsOn(testGradlePlugin)
+}
+
+val lintGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":ktlintCheck"))
+}
+
+val ktlintCheck: Task by tasks.getting {
+    dependsOn(lintGradlePlugin)
+}
+
+val uploadGradlePluginArchives: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":uploadArchives"))
+}
+
+val uploadArchives: Task by tasks.getting {
+    dependsOn(uploadGradlePluginArchives)
+}
+
 subprojects {
     apply(plugin = "defaults")
 
