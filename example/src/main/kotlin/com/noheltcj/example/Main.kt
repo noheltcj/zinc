@@ -2,7 +2,7 @@ package com.noheltcj.example
 
 import com.noheltcj.example.model.HelloBuilder.Companion.buildHello
 import com.noheltcj.example.model.WorldBuilder.Companion.buildWorld
-import java.util.*
+import java.util.UUID
 
 object Main {
     @JvmStatic
