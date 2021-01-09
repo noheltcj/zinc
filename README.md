@@ -1,4 +1,7 @@
 # Zinc
+![Test](https://github.com/noheltcj/zinc/workflows/Test/badge.svg)
+![Lint](https://github.com/noheltcj/zinc/workflows/Lint/badge.svg)
+
 An extensible compiler plugin for Kotlin to automatically expand data classes to include their own builder DSL.
 
 ## Introduction
@@ -34,7 +37,7 @@ Artifacts can be downloaded from Maven Central.
 ###Gradle KTS
 ```kotlin
 plugins {
-  id("com.noheltcj.zinc") version "0.0.2"
+  id("com.noheltcj.zinc") version "0.0.3"
 }
 
 zinc {
@@ -49,7 +52,7 @@ zinc {
 ### Gradle Groovy
 ```groovy
 plugins {
-    id 'com.noheltcj.zinc' version '0.0.2'
+    id 'com.noheltcj.zinc' version '0.0.3'
 }
 
 zinc {

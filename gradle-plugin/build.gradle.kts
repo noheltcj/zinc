@@ -39,7 +39,7 @@ pluginBundle {
 
 mavenPublish {
     nexus {
-        groupId = loadStringProperty("zincGroupId")
+        groupId = loadStringProperty("releaseProfile")
     }
 
     targets {
