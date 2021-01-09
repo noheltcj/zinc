@@ -50,10 +50,6 @@ val uploadGradlePluginArchives: Task by tasks.creating {
     dependsOn(gradle.includedBuild("gradle-plugin").task(":uploadArchives"))
 }
 
-val uploadArchives: Task by tasks.getting {
-    dependsOn(uploadGradlePluginArchives)
-}
-
 subprojects {
     apply(plugin = "com.noheltcj.zinc.defaults")
 
