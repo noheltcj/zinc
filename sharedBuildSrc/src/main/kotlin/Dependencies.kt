@@ -41,6 +41,8 @@ object Dependencies {
     object Test {
         const val compileTesting = "com.github.tschuchortdev:kotlin-compile-testing:${Versions.test.compileTesting}"
 
+        const val mockito = "com.nhaarman.mockitokotlin2:mockito-kotlin:${Versions.test.mockito}"
+
         const val truth = "com.google.truth:truth:${Versions.test.truth}"
 
         val spek = Spek

@@ -2,11 +2,9 @@ package com.noheltcj.zinc.compiler.plugin.registration
 
 import com.google.auto.service.AutoService
 import com.noheltcj.zinc.compiler.plugin.ServiceLocator
-import com.noheltcj.zinc.compiler.plugin.configuration.ResolvedConfiguration
 import com.noheltcj.zinc.compiler.plugin.analysis.ZincAnalysisHandlerExtension
-import org.jetbrains.kotlin.cli.common.CLIConfigurationKeys
+import com.noheltcj.zinc.compiler.plugin.configuration.ResolvedConfiguration
 import org.jetbrains.kotlin.cli.common.messages.CompilerMessageSeverity
-import org.jetbrains.kotlin.cli.common.messages.MessageCollector
 import org.jetbrains.kotlin.com.intellij.mock.MockProject
 import org.jetbrains.kotlin.com.intellij.openapi.extensions.impl.ExtensionPointImpl
 import org.jetbrains.kotlin.com.intellij.openapi.project.Project

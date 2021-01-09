@@ -2,16 +2,19 @@ package com.noheltcj.zinc.compiler.plugin
 
 import com.google.common.truth.Truth.assertThat
 import com.noheltcj.zinc.compiler.plugin.InputSources.createCompilation
+import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassInRoot
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithBuildable
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithId
+import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithMultipleSameTypeFields
 import com.noheltcj.zinc.compiler.plugin.InputSources.javaWidget
+import com.noheltcj.zinc.compiler.plugin.configuration.Option
 import com.tschuchort.compiletesting.KotlinCompilation
 import org.jetbrains.kotlin.konan.file.File
 import org.spekframework.spek2.Spek
 import org.spekframework.spek2.lifecycle.CachingMode
 import org.spekframework.spek2.style.specification.describe
 
-object ZincIntegrationTest: Spek({
+object ZincIntegrationTest : Spek({
     val arguments by memoized(CachingMode.TEST) { ArgumentsBuilder() }
     val compilation by memoized(CachingMode.TEST) { createCompilation() }
 
@@ -39,7 +42,7 @@ object ZincIntegrationTest: Spek({
 
             it("should have a useful message") {
                 assertThat(compilation.compile().messages)
-                    .contains("${TestConstants.requiredPluginOptionPrefix}:${Constants.Options.GENERATED_SOURCES_DIR.key}")
+                    .contains("${TestConstants.requiredPluginOptionPrefix}:${Option.GENERATED_SOURCES_DIR.key}")
             }
         }
 
@@ -67,7 +70,7 @@ object ZincIntegrationTest: Spek({
 
                 it("should generate in the specified directory") {
                     compilation.compile()
-                    assertThat(File("$sourcesDir/com/noheltcj/zinc/test/WidgetBuilder.kt").exists)
+                    assertThat(File("$sourcesDir/com/noheltcj/zinc/entity/WidgetBuilder.kt").exists)
                         .isTrue()
                 }
             }
@@ -103,10 +106,60 @@ object ZincIntegrationTest: Spek({
                 compilation.sources(dataClassWithId)
             }
 
-
-            it("should generate a single builder") {
+            it("should generate a single builder and companion") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
-                    .containsExactly("WidgetBuilder.class")
+                    .containsExactly("WidgetBuilder.class", "WidgetBuilder\$Companion.class")
+            }
+        }
+
+        describe("given a single data class in the root package") {
+            beforeEachTest {
+                compilation.sources(dataClassInRoot)
+            }
+
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
+            it("should generate a single builder and companion") {
+                assertThat(compilation.compile().pluginGeneratedClassNames())
+                    .containsExactly("InRootBuilder.class", "InRootBuilder\$Companion.class")
+            }
+        }
+
+        describe("given a single data class in the root package") {
+            beforeEachTest {
+                compilation.sources(dataClassInRoot)
+            }
+
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
+            it("should generate a single builder and companion") {
+                assertThat(compilation.compile().pluginGeneratedClassNames())
+                    .containsExactly("InRootBuilder.class", "InRootBuilder\$Companion.class")
+            }
+        }
+
+        describe("given a single data class with multiple fields of the same type") {
+            beforeEachTest {
+                compilation.sources(dataClassWithMultipleSameTypeFields)
+            }
+
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
+            it("should generate a single builder and companion") {
+                assertThat(compilation.compile().pluginGeneratedClassNames())
+                    .containsExactly(
+                        "MultipleSameTypeFieldsBuilder.class",
+                        "MultipleSameTypeFieldsBuilder\$Companion.class"
+                    )
             }
         }
 
@@ -115,9 +168,14 @@ object ZincIntegrationTest: Spek({
                 compilation.sources(dataClassWithId, dataClassWithBuildable)
             }
 
-            it("should generate two builders") {
+            it("should generate two builders and companions") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
-                    .containsExactly("WidgetBuilder.class", "CompositeBuilder.class")
+                    .containsExactly(
+                        "WidgetBuilder.class",
+                        "WidgetBuilder\$Companion.class",
+                        "CompositeBuilder.class",
+                        "CompositeBuilder\$Companion.class"
+                    )
             }
         }
     }

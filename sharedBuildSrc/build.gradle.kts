@@ -1,17 +1,15 @@
 plugins {
     `kotlin-dsl`
-    `java-gradle-plugin`
 }
 
 repositories {
-    gradlePluginPortal()
     jcenter()
 }
 
 gradlePlugin {
     plugins.register("defaults") {
-        id = "defaults"
-        implementationClass = "com.noheltcj.shared.build.GlobalDefaultsPlugin"
+        id = "com.noheltcj.zinc.defaults"
+        implementationClass = "com.noheltcj.zinc.shared.build.GlobalDefaultsPlugin"
     }
 }
 

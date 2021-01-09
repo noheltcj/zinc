@@ -9,4 +9,3 @@ buildConfig {
             buildConfigField("String", key, "\"${requireNotNull(value) as String}\"")
         }
 }
-

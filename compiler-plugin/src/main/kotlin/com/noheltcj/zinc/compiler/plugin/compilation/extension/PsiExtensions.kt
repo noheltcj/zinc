@@ -9,7 +9,15 @@ import org.jetbrains.kotlin.incremental.components.NoLookupLocation
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
-import org.jetbrains.kotlin.psi.*
+import org.jetbrains.kotlin.psi.KtAnnotationEntry
+import org.jetbrains.kotlin.psi.KtClassOrObject
+import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtNamedDeclaration
+import org.jetbrains.kotlin.psi.KtNullableType
+import org.jetbrains.kotlin.psi.KtTypeArgumentList
+import org.jetbrains.kotlin.psi.KtTypeReference
+import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.parents
 import org.jetbrains.kotlin.psi.psiUtil.parentsWithSelf
 import org.jetbrains.kotlin.resolve.DescriptorUtils
@@ -198,7 +206,13 @@ internal fun ModuleDescriptor.findClassOrTypeAlias(
     packageName: FqName,
     className: String
 ): ClassifierDescriptorWithTypeParameters? {
-    resolveClassByFqName(FqName("$packageName.$className"), NoLookupLocation.FROM_BACKEND)
+    resolveClassByFqName(FqName("${
+        if (packageName.isRoot) {
+            ""
+        } else {
+            "${packageName.asString()}."
+        }
+    }$className"), NoLookupLocation.FROM_BACKEND)
         ?.let { return it }
 
     findTypeAliasAcrossModuleDependencies(ClassId(packageName, Name.identifier(className)))

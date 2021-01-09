@@ -1,6 +1,7 @@
 package com.noheltcj.zinc.compiler.plugin.compilation.generator
 
 import com.noheltcj.zinc.compiler.plugin.compilation.extension.requireFqName
+import java.io.File
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.idea.KotlinFileType
 import org.jetbrains.kotlin.psi.KtClassOrObject
@@ -8,7 +9,6 @@ import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.getPossiblyQualifiedCallExpression
 import org.jetbrains.kotlin.resolve.BindingContext
-import java.io.File
 
 class DataClassBuilderGenerator : CodeGenerator {
 
@@ -94,15 +94,17 @@ ${classSource(ktClass)}
     }
 
     private fun headerAndPackageSource(psiClass: KtClassOrObject) = generatePackageName(psiClass)
-        .takeIf(String::isNotEmpty)
+        .takeIf { pkg -> pkg.isNotEmpty() && pkg != "<root>" }
         ?.let { "$generatedDisclaimer\n\npackage $it" }
         ?: generatedDisclaimer
 
     private fun importsSource(module: ModuleDescriptor, psiClass: KtClassOrObject) =
         filterToKtUserTypeConstructorParams(psiClass)
+            .asSequence()
             .map { "import ${requireNotNull(it.typeReference).requireFqName(module)}" }
             .plus("import com.noheltcj.zinc.core.BuilderProperty")
             .plus("import com.noheltcj.zinc.core.ZincBuilder")
+            .distinct()
             .sorted()
             .joinToString(separator = "\n")
 
@@ -122,7 +124,7 @@ ${classSource(ktClass)}
                                     ?: defaultExpression.text
                             )
                         }
-                        ?: ConstructorParameterMetadata.DefaultValue.None,
+                        ?: ConstructorParameterMetadata.DefaultValue.None
                 )
             }
 
@@ -164,7 +166,7 @@ ${classSource(ktClass)}
                     }
                 }\""
         }.plus(
-            "\t\tinline fun build${className}(crossinline block: $builderName.() -> Unit): $className =\n" +
+            "\t\t@JvmStatic inline fun build$className(crossinline block: $builderName.() -> Unit): $className =\n" +
                 "\t\t\t$builderName().apply(block).build()\n" +
                 "\t}"
         )

@@ -1,7 +1,7 @@
 package com.noheltcj.zinc.compiler.plugin.configuration
 
-import org.jetbrains.kotlin.config.CompilerConfiguration
 import java.io.File
+import org.jetbrains.kotlin.config.CompilerConfiguration
 
 data class ResolvedConfiguration(
     val isEnabled: Boolean,

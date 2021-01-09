@@ -1,4 +1,4 @@
-import com.noheltcj.shared.build.loadStringProperty
+import com.noheltcj.zinc.shared.build.loadStringProperty
 
 buildscript {
     dependencies {
@@ -9,7 +9,7 @@ buildscript {
 }
 
 plugins {
-    id("defaults")
+    id("com.noheltcj.zinc.defaults")
     id("com.gradle.plugin-publish") version "0.12.0"
     id("com.github.gmazzo.buildconfig") version "2.0.2"
 
@@ -55,6 +55,9 @@ dependencies {
     implementation(Dependencies.plugins.kotlinGradle)
     implementation(Dependencies.project.kotlin.gradlePluginApi)
     implementation(Dependencies.project.kotlin.stdlib)
+
+    testImplementation(Dependencies.test.compileTesting)
+    testImplementation(Dependencies.test.mockito)
 }
 
 pluginManager.withPlugin("org.jetbrains.kotlin.jvm") {

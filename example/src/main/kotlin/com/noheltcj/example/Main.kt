@@ -1,14 +1,25 @@
 package com.noheltcj.example
 
-import com.noheltcj.example.data.WidgetThingBuilder.Companion.buildWidgetThing
-import com.noheltcj.example.model.RatchetBuilder
+import com.noheltcj.example.model.HelloBuilder.Companion.buildHello
+import com.noheltcj.example.model.WorldBuilder.Companion.buildWorld
+import java.util.UUID
 
 object Main {
     @JvmStatic
     fun main(vararg args: String) {
-        println(buildWidgetThing {
-            id("Yep, functional")
-            ratchets(RatchetBuilder().id("Woot").build())
-        })
+        val helloWorld = buildHello {
+            id(randomId())
+            label("Hello")
+            world(
+                buildWorld {
+                    id(randomId())
+                    label("World")
+                }
+            )
+        }
+
+        println(helloWorld)
     }
+
+    private fun randomId() = UUID.randomUUID().toString()
 }

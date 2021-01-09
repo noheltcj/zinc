@@ -11,16 +11,33 @@ import org.jetbrains.kotlin.config.JvmTarget
 object InputSources {
     val allSources: Array<Source> by lazy {
         arrayOf(
+            dataClassInRoot,
             dataClassWithId,
+            dataClassWithMultipleSameTypeFields,
             dataClassWithBuildable,
             javaWidget
         )
     }
 
+    val dataClassInRoot = Source(
+        fileName = "InRoot",
+        packageName = "",
+        contents = """
+            data class InRoot(val id: String)
+        """.trimIndent()
+    )
+
     val dataClassWithId = Source(
         fileName = "Widget",
         contents = """
             data class Widget(val id: String)
+        """.trimIndent()
+    )
+
+    val dataClassWithMultipleSameTypeFields = Source(
+        fileName = "MultipleSameTypeFields",
+        contents = """
+            data class MultipleSameTypeFields(val id: String, val name: String)
         """.trimIndent()
     )
 
@@ -70,10 +87,16 @@ object InputSources {
                 }
             }"
             val contents = """
-                package $packageName${
-                if (type == SourceType.Java) ";"
-                else ""
-            }
+                ${
+                    if (packageName.isNotEmpty()) {
+                        "package $packageName${
+                            if (type == SourceType.Java) ";"
+                            else ""
+                        }"
+                    } else {
+                        ""
+                    }
+                }
                 
                 $contents
             """.trimIndent()

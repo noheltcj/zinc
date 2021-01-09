@@ -2,30 +2,57 @@
 An extensible compiler plugin for Kotlin to automatically expand data classes to include their own builder DSL.
 
 ## Introduction
-Zinc was originally created to reduce testing boilerplate, but supposedly there are production use cases too.
+Zinc was originally conceived as a solution to reduce testing boilerplate, but supposedly there are production use cases
+too.
 
 More information to come as this becomes more useful.
 
-## Setup
-For now, examples.
-```
-buildscript {
-  repositories {
-    mavenCentral()
-  }
-}
+## How it works
+When enabled, Zinc analyzes specified source sets and generates builders and a DSL for each data class. There are two
+classes of builders generated: _production_ and _test_.
 
+[See Examples](docs/hello_world_example.md)
+
+### Production Builders
+These builders are for use in production code when a builder pattern is preferable over using a constructor. All 
+properties must be able to resolve a value. When a field does not have a default value, an exception will be thrown with
+details about the missing field.
+
+Configure the source sets that should contribute to this classification by setting the `productionSourceSetNames` field
+on the plugin extension. [See Setup](#setup)
+
+### Test Builders
+_Not yet implemented._
+
+This is the work-in-progress primary feature of this plugin. Builders in this classification will be generated with 
+randomized default values for all fields. This essentially provides a clean, all fields optional way to supply fake 
+data in tests.
+
+## Setup
+Artifacts can be downloaded from Maven Central.
+
+###Gradle KTS
+```kotlin
 plugins {
-  id("com.noheltcj.zinc.gradle-plugin") version "0.0.1"
+  id("com.noheltcj.zinc") version "0.0.2"
 }
 
 zinc {
-  // All optional
-
-  // default is true
+  // defaults to true
   enabled = true
 
   // defaults to setOf("main")
-  mainSourceSetNames = setOf("main", "anotherSourceSet")
+  productionSourceSetNames = setOf("main", "anotherSourceSet")
+}
+```
+
+### Gradle Groovy
+```groovy
+plugins {
+    id 'com.noheltcj.zinc' version '0.0.2'
+}
+
+zinc {
+    productionSourceSetNames = ['main', 'anotherSourceSet']
 }
 ```

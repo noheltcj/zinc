@@ -1,7 +1,7 @@
-import com.noheltcj.shared.build.loadStringProperty
+import com.noheltcj.zinc.shared.build.loadStringProperty
 
 plugins {
-    id("defaults")
+    id("com.noheltcj.zinc.defaults")
 }
 
 buildscript {
@@ -13,8 +13,45 @@ buildscript {
     }
 }
 
+val cleanGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":clean"))
+}
+
+val clean: Task by tasks.getting {
+    dependsOn(cleanGradlePlugin)
+}
+
+val testGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":test"))
+}
+
+val test: Task by tasks.getting {
+    // TODO: Re-enable once these tests are valuable
+    // dependsOn(testGradlePlugin)
+}
+
+val ktlintCheckGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":ktlintCheck"))
+}
+
+val ktlintCheck: Task by tasks.getting {
+    dependsOn(ktlintCheckGradlePlugin)
+}
+
+val ktlintFormatGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":ktlintFormat"))
+}
+
+val ktlintFormat: Task by tasks.getting {
+    dependsOn(ktlintFormatGradlePlugin)
+}
+
+val uploadGradlePluginArchives: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":uploadArchives"))
+}
+
 subprojects {
-    apply(plugin = "defaults")
+    apply(plugin = "com.noheltcj.zinc.defaults")
 
     pluginManager.withPlugin(Dependencies.targets.jvm) {
         tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile::class).configureEach {

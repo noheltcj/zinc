@@ -1,10 +1,10 @@
 plugins {
     application
-    id("com.noheltcj.zinc.gradle-plugin")
+    id("com.noheltcj.zinc")
 }
 
 zinc {
-    mainSourceSetNames = setOf("main", "test")
+    productionSourceSetNames = setOf("main", "test")
 }
 
 application {
