@@ -34,7 +34,7 @@ data in tests.
 ## Setup
 Artifacts can be downloaded from Maven Central.
 
-###Gradle KTS
+### Gradle Kotlin Script
 ```kotlin
 plugins {
   id("com.noheltcj.zinc") version "0.0.3"
