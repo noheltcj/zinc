@@ -13,6 +13,14 @@ buildscript {
     }
 }
 
+val cleanGradlePlugin: Task by tasks.creating {
+    dependsOn(gradle.includedBuild("gradle-plugin").task(":clean"))
+}
+
+val clean: Task by tasks.getting {
+    dependsOn(cleanGradlePlugin)
+}
+
 val testGradlePlugin: Task by tasks.creating {
     dependsOn(gradle.includedBuild("gradle-plugin").task(":test"))
 }

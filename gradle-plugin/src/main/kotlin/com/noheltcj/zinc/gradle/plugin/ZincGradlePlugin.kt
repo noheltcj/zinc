@@ -15,7 +15,7 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
 
     override fun isApplicable(kotlinCompilation: KotlinCompilation<*>): Boolean {
         val compilationName = kotlinCompilation.name
-        if (compilationName == MAIN_COMPILATION_NAME || compilationName == TEST_COMPILATION_NAME) {
+        if (compilationName == PROD_COMPILATION_NAME || compilationName == TEST_COMPILATION_NAME) {
             return false
         }
 
@@ -26,7 +26,7 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
         val project = kotlinCompilation.target.project
         val extension = project.extensions.findByType(ZincGradleExtension::class.java) ?: ZincGradleExtension()
 
-        return extension.mainSourceSetNames.contains(compilationName)
+        return extension.productionSourceSetNames.contains(compilationName)
     }
 
     override fun getCompilerPluginId(): String = BuildConfig.zincCompilerPluginId
@@ -42,15 +42,15 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
         val extension = project.extensions.findByType(ZincGradleExtension::class.java) ?: ZincGradleExtension()
 
         val sourceSets = project.extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
-        val (generatedSourcesDirectory, isMain) =
-            if (extension.mainSourceSetNames.contains(kotlinCompilation.name)) {
-                File(project.buildDir, zincMainGenDir) to true
+        val (generatedSourcesDirectory, isProduction) =
+            if (extension.productionSourceSetNames.contains(kotlinCompilation.name)) {
+                File(project.buildDir, zincProdGenDir) to true
             } else {
                 throw IllegalStateException("Test generation not implemented yet.")
             }
 
-        val (buildGenPath, configuredSourceSetNames) = if (isMain) {
-            zincMainGenDir to extension.mainSourceSetNames
+        val (buildGenPath, configuredSourceSetNames) = if (isProduction) {
+            zincProdGenDir to extension.productionSourceSetNames
         } else {
             throw IllegalStateException("Test generation not implemented yet.")
         }
@@ -78,12 +78,12 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
     override fun apply(target: Project): Unit = with(target) {
         extensions.create("zinc", ZincGradleExtension::class.java)
 
-        val mainGenBuildDir = File(project.buildDir, zincMainGenDir)
+        val prodGenBuildDir = File(project.buildDir, zincProdGenDir)
         val testGenBuildDir = File(project.buildDir, zincTestGenDir)
 
         val sourceSets = project.extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
-        sourceSets.create(MAIN_COMPILATION_NAME) { sourceSet ->
-            sourceSet.java.srcDirs += mainGenBuildDir
+        sourceSets.create(PROD_COMPILATION_NAME) { sourceSet ->
+            sourceSet.java.srcDirs += prodGenBuildDir
         }
         sourceSets.create(TEST_COMPILATION_NAME) { sourceSet ->
             sourceSet.java.srcDirs += testGenBuildDir
@@ -96,10 +96,10 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
     }
 
     companion object {
-        private const val MAIN_COMPILATION_NAME = "zinc-main"
+        private const val PROD_COMPILATION_NAME = "zinc-prod"
         private const val TEST_COMPILATION_NAME = "zinc-test"
 
-        private val zincMainGenDir = "zinc${File.separator}generated${File.separator}source${File.separator}main${File.separator}"
+        private val zincProdGenDir = "zinc${File.separator}generated${File.separator}source${File.separator}prod${File.separator}"
         private val zincTestGenDir = "zinc${File.separator}generated${File.separator}source${File.separator}test${File.separator}"
     }
 }

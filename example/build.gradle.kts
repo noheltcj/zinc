@@ -4,7 +4,7 @@ plugins {
 }
 
 zinc {
-    mainSourceSetNames = setOf("main", "test")
+    productionSourceSetNames = setOf("main", "test")
 }
 
 application {

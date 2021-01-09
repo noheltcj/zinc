@@ -2,13 +2,16 @@ package com.noheltcj.zinc.gradle.plugin
 
 open class ZincGradleExtension {
     private var _enabled: Boolean? = null
-    private var _mainSources: Set<String>? = null
+    private var _productionSources: Set<String>? = null
 
     var enabled: Boolean
     get() = _enabled ?: true
     set(value) { _enabled = value }
 
-    var mainSourceSetNames: Set<String>
-        get() = _mainSources ?: setOf("main")
-        set(value) { _mainSources = value }
+    /**
+     * Configure the source sets that will contribute
+     */
+    var productionSourceSetNames: Set<String>
+        get() = _productionSources ?: setOf("main")
+        set(value) { _productionSources = value }
 }
