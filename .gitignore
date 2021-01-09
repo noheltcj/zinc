@@ -1,11 +1,15 @@
 *.iml
 .gradle/
 /local.properties
-/gradle.properties
 /.idea
 .DS_Store
 out/
-build/
+/build/
+compiler-plugin/build/
+core/build/
+example/build/
+gradle-plugin/build/
+sharedBuildSrc/build/
 /captures
 /local
 *.orig
