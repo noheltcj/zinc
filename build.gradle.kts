@@ -50,6 +50,10 @@ val uploadGradlePluginArchives: Task by tasks.creating {
     dependsOn(gradle.includedBuild("gradle-plugin").task(":uploadArchives"))
 }
 
+val uploadArchives: Task by tasks.getting {
+    dependsOn(uploadGradlePluginArchives)
+}
+
 subprojects {
     apply(plugin = "com.noheltcj.zinc.defaults")
 
@@ -66,7 +70,7 @@ subprojects {
         val mavenPublish = requireNotNull(extensions.findByType(com.vanniktech.maven.publish.MavenPublishPluginExtension::class))
 
         mavenPublish.nexus {
-            groupId = loadStringProperty("zincGroupId")
+            groupId = loadStringProperty("releaseProfile")
         }
 
         val uploadArchivesTarget: com.vanniktech.maven.publish.MavenPublishTarget = requireNotNull(
