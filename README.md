@@ -1,6 +1,7 @@
 # Zinc
-![Test](https://github.com/noheltcj/zinc/workflows/Test/badge.svg)
-![Lint](https://github.com/noheltcj/zinc/workflows/Lint/badge.svg)
+![tests](https://github.com/noheltcj/zinc/workflows/Test/badge.svg)
+![lint](https://github.com/noheltcj/zinc/workflows/Lint/badge.svg)
+[![maven central](https://maven-badges.herokuapp.com/maven-central/com.noheltcj.zinc/gradle-plugin/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.noheltcj.zinc/gradle-plugin)
 
 An extensible compiler plugin for Kotlin to automatically expand data classes to include their own builder DSL.
 
