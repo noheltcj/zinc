@@ -24,6 +24,7 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.supertypes
+import kotlin.reflect.KClass
 
 /**
  * Thanks Anvil developers,
@@ -163,7 +164,7 @@ fun PsiElement.requireFqName(
     )
 }
 
-internal fun KtNamedDeclaration.requireFqName(): FqName = requireNotNull(fqName) {
+fun KtNamedDeclaration.requireFqName(): FqName = requireNotNull(fqName) {
     "fqName was null for $this, $nameAsSafeName"
 }
 
@@ -193,16 +194,16 @@ private fun PsiElement.findFqNameInSuperTypes(
         .firstOrNull()
 }
 
-internal fun KotlinType.classDescriptorForType() = DescriptorUtils.getClassDescriptorForType(this)
+fun KotlinType.classDescriptorForType() = DescriptorUtils.getClassDescriptorForType(this)
 
-internal fun List<KotlinType>.getAllSuperTypes(): Sequence<FqName> =
+fun List<KotlinType>.getAllSuperTypes(): Sequence<FqName> =
     generateSequence(this) { kotlinTypes ->
         kotlinTypes.ifEmpty { null }?.flatMap { it.supertypes() }
     }
         .flatMap { it.asSequence() }
         .map { DescriptorUtils.getFqNameSafe(it.classDescriptorForType()) }
 
-internal fun ModuleDescriptor.findClassOrTypeAlias(
+fun ModuleDescriptor.findClassOrTypeAlias(
     packageName: FqName,
     className: String
 ): ClassifierDescriptorWithTypeParameters? {
@@ -219,4 +220,25 @@ internal fun ModuleDescriptor.findClassOrTypeAlias(
         ?.let { return it }
 
     return null
+}
+
+fun PsiElement.recurseChildrenInclusive(): Sequence<PsiElement> =
+    sequenceOf(this)
+        .let { sequence ->
+            if (children.isNotEmpty()) {
+                sequence
+                    .plus(
+                        children.flatMap { child ->
+                            child.recurseChildrenInclusive()
+                        }
+                    )
+                    .distinct()
+            } else {
+                sequence
+            }
+        }
+
+inline fun <reified T> PsiElement.recurseTreeForInstancesOf(): Sequence<T> {
+    val children = recurseChildrenInclusive()
+    return children.filterIsInstance<T>()
 }

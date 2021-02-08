@@ -1,4 +1,4 @@
-package com.noheltcj.zinc.compiler.plugin
+package com.noheltcj.zinc.compiler.plugin.extension
 
 import com.noheltcj.zinc.compiler.plugin.configuration.Argument
 import com.noheltcj.zinc.core.Properties.compilerPluginId

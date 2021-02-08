@@ -4,9 +4,11 @@ import com.google.common.truth.Truth.assertThat
 import com.noheltcj.zinc.compiler.plugin.InputSources.createCompilation
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassInRoot
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithBuildable
+import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithDefaultedValues
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithId
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithMultipleSameTypeFields
 import com.noheltcj.zinc.compiler.plugin.InputSources.javaWidget
+import com.noheltcj.zinc.compiler.plugin.builder.ArgumentsBuilder
 import com.noheltcj.zinc.compiler.plugin.configuration.Option
 import com.tschuchort.compiletesting.KotlinCompilation
 import org.jetbrains.kotlin.konan.file.File
@@ -14,7 +16,7 @@ import org.spekframework.spek2.Spek
 import org.spekframework.spek2.lifecycle.CachingMode
 import org.spekframework.spek2.style.specification.describe
 
-object ZincIntegrationTest : Spek({
+object ZincAnalysisIntegrationTest : Spek({
     val arguments by memoized(CachingMode.TEST) { ArgumentsBuilder() }
     val compilation by memoized(CachingMode.TEST) { createCompilation() }
 
@@ -22,7 +24,6 @@ object ZincIntegrationTest : Spek({
 
     describe("configuration") {
         beforeEachTest {
-            // Configuring basic source file for execution.
             compilation.sources()
         }
 
@@ -106,6 +107,11 @@ object ZincIntegrationTest : Spek({
                 compilation.sources(dataClassWithId)
             }
 
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
             it("should generate a single builder and companion") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
                     .containsExactly("WidgetBuilder.class", "WidgetBuilder\$Companion.class")
@@ -168,6 +174,11 @@ object ZincIntegrationTest : Spek({
                 compilation.sources(dataClassWithId, dataClassWithBuildable)
             }
 
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
             it("should generate two builders and companions") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
                     .containsExactly(
@@ -175,6 +186,25 @@ object ZincIntegrationTest : Spek({
                         "WidgetBuilder\$Companion.class",
                         "CompositeBuilder.class",
                         "CompositeBuilder\$Companion.class"
+                    )
+            }
+        }
+
+        describe("given a data class with a defaulted value") {
+            beforeEachTest {
+                compilation.sources(dataClassWithDefaultedValues)
+            }
+
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
+            it("should generate a single builder and companion") {
+                assertThat(compilation.compile().pluginGeneratedClassNames())
+                    .containsExactly(
+                        "DefaultedValuesBuilder.class",
+                        "DefaultedValuesBuilder\$Companion.class"
                     )
             }
         }

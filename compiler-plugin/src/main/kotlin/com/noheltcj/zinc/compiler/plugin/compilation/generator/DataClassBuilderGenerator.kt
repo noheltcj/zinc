@@ -1,11 +1,16 @@
 package com.noheltcj.zinc.compiler.plugin.compilation.generator
 
+import com.noheltcj.zinc.compiler.plugin.compilation.extension.recurseTreeForInstancesOf
 import com.noheltcj.zinc.compiler.plugin.compilation.extension.requireFqName
 import java.io.File
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.idea.KotlinFileType
+import org.jetbrains.kotlin.psi.KtBlockStringTemplateEntry
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
+import org.jetbrains.kotlin.psi.KtParameter
+import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.psi.KtUserType
 import org.jetbrains.kotlin.psi.psiUtil.getPossiblyQualifiedCallExpression
 import org.jetbrains.kotlin.resolve.BindingContext
@@ -101,7 +106,11 @@ ${classSource(ktClass)}
     private fun importsSource(module: ModuleDescriptor, psiClass: KtClassOrObject) =
         filterToKtUserTypeConstructorParams(psiClass)
             .asSequence()
-            .map { "import ${requireNotNull(it.typeReference).requireFqName(module)}" }
+            .map { "import ${requireNotNull(it.typeReference).requireFqName(module)}" to it }
+            .flatMap { (import, parameter) ->
+                extractAdditionalParameterImports(module, parameter)
+                    .plus(import)
+            }
             .plus("import com.noheltcj.zinc.core.BuilderProperty")
             .plus("import com.noheltcj.zinc.core.ZincBuilder")
             .distinct()
@@ -112,27 +121,15 @@ ${classSource(ktClass)}
         val className = requireNotNull(psiClass.name)
         val builderName = "${className}Builder"
 
-        val parameterMetadata = psiClass.primaryConstructorParameters
-            .map { param ->
-                ConstructorParameterMetadata(
-                    propertyName = requireNotNull(param.name),
-                    typeName = requireNotNull(param.typeReference).text,
-                    default = param.defaultValue
-                        ?.let { defaultExpression ->
-                            ConstructorParameterMetadata.DefaultValue.Some(
-                                expression = defaultExpression.getPossiblyQualifiedCallExpression()?.text
-                                    ?: defaultExpression.text
-                            )
-                        }
-                        ?: ConstructorParameterMetadata.DefaultValue.None
-                )
-            }
+        val parameterMetadata = getConstructorParamMetadata(psiClass)
 
         val parameterDefinitionsSource = parameterMetadata.joinToString(separator = "\n\n") { metadata ->
             "\tprivate var _${metadata.propertyName}: ${metadata.typeName} by BuilderProperty<${metadata.typeName}>(${
                 when (val default = metadata.default) {
                     ConstructorParameterMetadata.DefaultValue.None -> ""
-                    is ConstructorParameterMetadata.DefaultValue.Some -> "\n\t\tvalue = ${default.expression}"
+                    is ConstructorParameterMetadata.DefaultValue.Some -> "\n\t\tdefaultValue = ${
+                        default.expression
+                    },"
                 } + "\n\t\tpropertyDescription = ${metadata.propertyName}Description"
             }\n\t)"
         }
@@ -158,15 +155,17 @@ ${classSource(ktClass)}
                 "\t\tprivate const val builderName = \"$builderName\"\n",
             postfix = "\n\n"
         ) { metadata ->
-            "\t\tprivate const val ${metadata.propertyName}Description = \n\t\t\t" +
+            "\t\tprivate val ${metadata.propertyName}Description = \n\t\t\t" +
                 "\"\$builderName property \\\"${metadata.propertyName}\\\" with type: ${metadata.typeName} and ${
                     when (val default = metadata.default) {
                         ConstructorParameterMetadata.DefaultValue.None -> "no default value"
-                        is ConstructorParameterMetadata.DefaultValue.Some -> "default value expression \\\"${default.expression}\\\""
+                        is ConstructorParameterMetadata.DefaultValue.Some -> "default value expression: ${
+                            default.expression.replace("\"", "\\\"")
+                        }"
                     }
                 }\""
         }.plus(
-            "\t\t@JvmStatic inline fun build$className(crossinline block: $builderName.() -> Unit): $className =\n" +
+            "\t\t@JvmStatic inline fun build$className(crossinline block: $builderName.() -> Unit = {}): $className =\n" +
                 "\t\t\t$builderName().apply(block).build()\n" +
                 "\t}"
         )
@@ -192,6 +191,43 @@ ${classSource(ktClass)}
     private fun filterToKtUserTypeConstructorParams(psiClass: KtClassOrObject) = psiClass.primaryConstructorParameters
         .filter { it.typeReference != null }
         .filter { requireNotNull(it.typeReference).typeElement is KtUserType }
+
+    private fun getConstructorParamMetadata(psiClass: KtClassOrObject) = psiClass.primaryConstructorParameters
+        .map { param ->
+            ConstructorParameterMetadata(
+                propertyName = requireNotNull(param.name),
+                typeName = requireNotNull(param.typeReference).text,
+                default = param.defaultValue
+                    ?.let { defaultExpression ->
+                        ConstructorParameterMetadata.DefaultValue.Some(
+                            expression = defaultExpression.getPossiblyQualifiedCallExpression()?.text
+                                ?: defaultExpression.text
+                        )
+                    }
+                    ?: ConstructorParameterMetadata.DefaultValue.None
+            )
+        }
+
+    private fun extractAdditionalParameterImports(module: ModuleDescriptor, ktParameter: KtParameter): List<String> =
+        ktParameter.defaultValue
+            ?.let { defaultExpression ->
+                when (defaultExpression) {
+                    is KtStringTemplateExpression -> {
+                        defaultExpression.entries
+                            .filterIsInstance<KtBlockStringTemplateEntry>()
+                            .flatMap { blockEntry ->
+                                val result = blockEntry.recurseTreeForInstancesOf<KtNameReferenceExpression>()
+                                result
+                            }
+                            .mapNotNull { ktNameReferenceExpression ->
+                                kotlin.runCatching { "import ${ktNameReferenceExpression.requireFqName(module)}" }
+                                    .getOrNull()
+                            }
+                    }
+                    else -> emptyList()
+                }
+            }
+            ?: emptyList()
 
     private data class ConstructorParameterMetadata(
         val propertyName: String,

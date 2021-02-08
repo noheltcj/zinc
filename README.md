@@ -12,15 +12,16 @@ too.
 More information to come as this becomes more useful.
 
 ## How it works
-When enabled, Zinc analyzes specified source sets and generates builders and a DSL for each data class. There are two
-classes of builders generated: _production_ and _test_.
+When enabled, Zinc analyzes specified source sets and generates builders and a DSL for each data class based on the
+constructor params. Fields not in the primary constructor must be set after building. There are two classes of builders 
+generated: _production_ and _test_.
 
 [See Examples](docs/hello_world_example.md)
 
 ### Production Builders
 These builders are for use in production code when a builder pattern is preferable over using a constructor. All 
 properties must be able to resolve a value. When a field does not have a default value, an exception will be thrown with
-details about the missing field.
+details about the missing parameter.
 
 Configure the source sets that should contribute to this classification by setting the `productionSourceSetNames` field
 on the plugin extension. [See Setup](#setup)

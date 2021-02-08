@@ -12,9 +12,10 @@ object InputSources {
     val allSources: Array<Source> by lazy {
         arrayOf(
             dataClassInRoot,
+            dataClassWithBuildable,
+            dataClassWithDefaultedValues,
             dataClassWithId,
             dataClassWithMultipleSameTypeFields,
-            dataClassWithBuildable,
             javaWidget
         )
     }
@@ -24,6 +25,21 @@ object InputSources {
         packageName = "",
         contents = """
             data class InRoot(val id: String)
+        """.trimIndent()
+    )
+
+    val randomUUIDExpression = "\${UUID.randomUUID().toString()}"
+    val dataClassWithDefaultedValues = Source(
+        fileName = "DefaultedValues",
+        contents = """
+            import java.util.UUID
+            
+            data class DefaultedValues(
+                val defaultedLong: Long = 1L,
+                val defaultedString: String = "defaultString",
+                val defaultedRandomString: String = "$randomUUIDExpression interpolated",
+                val defaultedAny: Any = true
+            )
         """.trimIndent()
     )
 
