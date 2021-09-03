@@ -4,15 +4,11 @@
 /.idea
 .DS_Store
 out/
-/build/
-compiler-plugin/build/
-core/build/
-example/build/
-gradle-plugin/build/
-sharedBuildSrc/build/
+build/
 /captures
 /local
 *.orig
+*.generated
 /projectFilesBackup*
 /reports
 /private_tools

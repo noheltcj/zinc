@@ -1,10 +1,17 @@
 plugins {
-    application
+    id("defaults")
     id("com.noheltcj.zinc")
+
+    application
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
 }
 
 zinc {
-    productionSourceSetNames = setOf("main", "test")
+    productionSourceSetNames = setOf("main")
 }
 
 application {

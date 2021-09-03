@@ -10,6 +10,14 @@ includeBuild("sharedBuildSrc")
 
 includeBuild("gradle-plugin") {
     dependencySubstitution {
-        substitute(module("com.noheltcj.zinc:gradle-plugin")).with(project(":"))
+        substitute(module("com.noheltcj.zinc:gradle-plugin")).using(project(":"))
+    }
+}
+
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
     }
 }

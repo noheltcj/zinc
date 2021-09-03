@@ -1,7 +1,7 @@
 object Versions {
     const val autoService = "1.0-rc7"
 
-    const val kotlin = "1.4.21"
+    const val kotlin = "1.5.21"
 
     val test = Test
     object Test {

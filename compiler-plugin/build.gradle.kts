@@ -1,9 +1,11 @@
 plugins {
-    id("org.jetbrains.kotlin.kapt")
+    id("defaults")
+
+    kotlin("kapt")
 }
 
 dependencies {
-    implementation(project(":core"))
+    api(project(":core"))
 
     compileOnly(Dependencies.project.google.auto.annotations)
     compileOnly(Dependencies.project.kotlin.compilerEmbedded)

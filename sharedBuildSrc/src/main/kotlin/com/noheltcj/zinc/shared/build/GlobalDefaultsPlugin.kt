@@ -17,21 +17,8 @@ class GlobalDefaultsPlugin : Plugin<Project> {
 
     override fun apply(target: Project) {
         target.repositories {
-            google()
-            gradlePluginPortal()
-            jcenter()
-            maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-            maven(url = "http://dl.bintray.com/kotlin/kotlin-dev")
-        }
-
-        target.buildscript {
-            repositories {
-                google()
-                gradlePluginPortal()
-                jcenter()
-                maven(url = "https://dl.bintray.com/kotlin/kotlin-eap")
-                maven(url = "http://dl.bintray.com/kotlin/kotlin-dev")
-            }
+            mavenCentral()
+            mavenLocal()
         }
 
         target.plugins {
@@ -47,13 +34,13 @@ class GlobalDefaultsPlugin : Plugin<Project> {
             target.group = target.loadStringProperty("zincGroupId")
             target.version = target.loadStringProperty("zincVersion")
 
-            val sourceSets = target.extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
-            sourceSets["main"].java.srcDir("src/main/kotlin")
-            sourceSets["test"].java.srcDir("src/test/kotlin")
-
             if (publishingWhitelist.contains(target.name)) {
                 target.configurePublishing()
             }
+
+            val sourceSets = target.extensions.getByName("sourceSets") as org.gradle.api.tasks.SourceSetContainer
+            sourceSets["main"].java.srcDir("src/main/kotlin")
+            sourceSets["test"].java.srcDir("src/test/kotlin")
 
             target.tasks.named("test", Test::class) {
                 useJUnitPlatform {

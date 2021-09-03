@@ -158,12 +158,12 @@ ${classSource(ktClass)}
             "\t\tprivate val ${metadata.propertyName}Description = \n\t\t\t" +
                 "\"\$builderName property \\\"${metadata.propertyName}\\\" with type: ${metadata.typeName} and ${
                     when (val default = metadata.default) {
-                        ConstructorParameterMetadata.DefaultValue.None -> "no default value"
-                        is ConstructorParameterMetadata.DefaultValue.Some -> "default value expression: ${
-                            default.expression.replace("\"", "\\\"")
+                        ConstructorParameterMetadata.DefaultValue.None -> "no default value\""
+                        is ConstructorParameterMetadata.DefaultValue.Some -> "default value expression: \" + ${
+                            default.expression
                         }"
                     }
-                }\""
+                }"
         }.plus(
             "\t\t@JvmStatic inline fun build$className(crossinline block: $builderName.() -> Unit = {}): $className =\n" +
                 "\t\t\t$builderName().apply(block).build()\n" +

@@ -3,12 +3,13 @@ plugins {
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
+    mavenLocal()
 }
 
 gradlePlugin {
-    plugins.register("defaults") {
-        id = "com.noheltcj.zinc.defaults"
+    plugins.register("defaults-plugin") {
+        id = "defaults"
         implementationClass = "com.noheltcj.zinc.shared.build.GlobalDefaultsPlugin"
     }
 }
