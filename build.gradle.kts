@@ -1,4 +1,4 @@
-import com.noheltcj.zinc.shared.build.loadStringProperty
+
 
 plugins {
     id("org.jetbrains.dokka") version "1.5.0" apply false
@@ -52,13 +52,13 @@ val publishGradlePluginLocally: Task by tasks.creating {
     dependsOn(gradle.includedBuild("gradle-plugin").task(":publishToMavenLocal"))
 }
 
-//val uploadGradlePluginArchives: Task by tasks.creating {
+// val uploadGradlePluginArchives: Task by tasks.creating {
 //    dependsOn(gradle.includedBuild("gradle-plugin").task(":uploadArchives"))
-//}
+// }
 //
-//val uploadArchives: Task by tasks.getting {
+// val uploadArchives: Task by tasks.getting {
 //    dependsOn(uploadGradlePluginArchives)
-//}
+// }
 
 subprojects {
     pluginManager.withPlugin(Dependencies.targets.jvm) {

@@ -5,9 +5,12 @@ import com.noheltcj.zinc.compiler.plugin.InputSources.createCompilation
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassInRoot
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithBuildable
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithDefaultedValues
+import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithDefaultedValuesUsingExternalPackages
+import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithDefaultedValuesUsingNothingReceiverInExternalPackages
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithId
 import com.noheltcj.zinc.compiler.plugin.InputSources.dataClassWithMultipleSameTypeFields
 import com.noheltcj.zinc.compiler.plugin.InputSources.javaWidget
+import com.noheltcj.zinc.compiler.plugin.InputSources.primaryExternalPackageDefaults
 import com.noheltcj.zinc.compiler.plugin.builder.ArgumentsBuilder
 import com.noheltcj.zinc.compiler.plugin.configuration.Option
 import com.tschuchort.compiletesting.KotlinCompilation
@@ -112,9 +115,13 @@ object ZincAnalysisIntegrationTest : Spek({
                     .isEqualTo(KotlinCompilation.ExitCode.OK)
             }
 
-            it("should generate a single builder and companion") {
+            it("should generate a single builder") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
-                    .containsExactly("WidgetBuilder.class", "WidgetBuilder\$Companion.class")
+                    .containsExactly(
+                        "WidgetBuilder.class",
+                        "WidgetBuilder\$Companion.class",
+                        "WidgetBuilder\$Companion\$buildWidget\$1.class"
+                    )
             }
         }
 
@@ -128,9 +135,13 @@ object ZincAnalysisIntegrationTest : Spek({
                     .isEqualTo(KotlinCompilation.ExitCode.OK)
             }
 
-            it("should generate a single builder and companion") {
+            it("should generate a single builder") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
-                    .containsExactly("InRootBuilder.class", "InRootBuilder\$Companion.class")
+                    .containsExactly(
+                        "InRootBuilder.class",
+                        "InRootBuilder\$Companion.class",
+                        "InRootBuilder\$Companion\$buildInRoot\$1.class"
+                    )
             }
         }
 
@@ -144,9 +155,13 @@ object ZincAnalysisIntegrationTest : Spek({
                     .isEqualTo(KotlinCompilation.ExitCode.OK)
             }
 
-            it("should generate a single builder and companion") {
+            it("should generate a single builder") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
-                    .containsExactly("InRootBuilder.class", "InRootBuilder\$Companion.class")
+                    .containsExactly(
+                        "InRootBuilder.class",
+                        "InRootBuilder\$Companion.class",
+                        "InRootBuilder\$Companion\$buildInRoot\$1.class"
+                    )
             }
         }
 
@@ -160,11 +175,12 @@ object ZincAnalysisIntegrationTest : Spek({
                     .isEqualTo(KotlinCompilation.ExitCode.OK)
             }
 
-            it("should generate a single builder and companion") {
+            it("should generate a single builder") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
                     .containsExactly(
                         "MultipleSameTypeFieldsBuilder.class",
-                        "MultipleSameTypeFieldsBuilder\$Companion.class"
+                        "MultipleSameTypeFieldsBuilder\$Companion.class",
+                        "MultipleSameTypeFieldsBuilder\$Companion\$buildMultipleSameTypeFields\$1.class"
                     )
             }
         }
@@ -179,18 +195,20 @@ object ZincAnalysisIntegrationTest : Spek({
                     .isEqualTo(KotlinCompilation.ExitCode.OK)
             }
 
-            it("should generate two builders and companions") {
+            it("should generate two builders") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
                     .containsExactly(
                         "WidgetBuilder.class",
                         "WidgetBuilder\$Companion.class",
+                        "WidgetBuilder\$Companion\$buildWidget\$1.class",
                         "CompositeBuilder.class",
-                        "CompositeBuilder\$Companion.class"
+                        "CompositeBuilder\$Companion.class",
+                        "CompositeBuilder\$Companion\$buildComposite\$1.class"
                     )
             }
         }
 
-        describe("given a data class with a defaulted value") {
+        describe("given a data class with a same-package defaulted value") {
             beforeEachTest {
                 compilation.sources(dataClassWithDefaultedValues)
             }
@@ -200,11 +218,60 @@ object ZincAnalysisIntegrationTest : Spek({
                     .isEqualTo(KotlinCompilation.ExitCode.OK)
             }
 
-            it("should generate a single builder and companion") {
+            it("should generate a single builder") {
                 assertThat(compilation.compile().pluginGeneratedClassNames())
                     .containsExactly(
                         "DefaultedValuesBuilder.class",
-                        "DefaultedValuesBuilder\$Companion.class"
+                        "DefaultedValuesBuilder\$Companion.class",
+                        "DefaultedValuesBuilder\$Companion\$buildDefaultedValues\$1.class"
+                    )
+            }
+        }
+
+        describe("given a data class with a defaulted value using tools from another package") {
+            beforeEachTest {
+                compilation.sources(
+                    dataClassWithDefaultedValuesUsingExternalPackages,
+                    primaryExternalPackageDefaults
+                )
+            }
+
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
+            it("should generate a single builder") {
+                assertThat(compilation.compile().pluginGeneratedClassNames())
+                    .containsExactly(
+                        "PrimaryExternalPackageDefaultsKt.class",
+                        "DefaultedValuesExternalBuilder.class",
+                        "DefaultedValuesExternalBuilder\$Companion.class",
+                        "DefaultedValuesExternalBuilder\$Companion\$buildDefaultedValuesExternal\$1.class"
+                    )
+            }
+        }
+
+        describe("given a data class with defaults using Nothing typed receivers from another package") {
+            beforeEachTest {
+                compilation.sources(
+                    dataClassWithDefaultedValuesUsingNothingReceiverInExternalPackages,
+                    primaryExternalPackageDefaults
+                )
+            }
+
+            it("should exit successfully") {
+                assertThat(compilation.compile().exitCode)
+                    .isEqualTo(KotlinCompilation.ExitCode.OK)
+            }
+
+            it("should generate a single builder") {
+                assertThat(compilation.compile().pluginGeneratedClassNames())
+                    .containsExactly(
+                        "PrimaryExternalPackageDefaultsKt.class",
+                        "DefaultedValuesExternalBuilder.class",
+                        "DefaultedValuesExternalBuilder\$Companion.class",
+                        "DefaultedValuesExternalBuilder\$Companion\$buildDefaultedValuesExternal\$1.class"
                     )
             }
         }

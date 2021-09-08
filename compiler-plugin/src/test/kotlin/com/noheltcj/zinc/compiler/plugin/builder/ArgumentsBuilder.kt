@@ -1,7 +1,7 @@
 package com.noheltcj.zinc.compiler.plugin.builder
 
-import com.noheltcj.zinc.compiler.plugin.extension.ArgumentExtensions.toPluginOption
 import com.noheltcj.zinc.compiler.plugin.configuration.Argument
+import com.noheltcj.zinc.compiler.plugin.extension.ArgumentExtensions.toPluginOption
 import com.tschuchort.compiletesting.PluginOption
 
 data class ArgumentsBuilder(

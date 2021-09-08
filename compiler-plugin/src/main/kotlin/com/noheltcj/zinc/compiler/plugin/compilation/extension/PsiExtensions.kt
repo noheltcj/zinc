@@ -24,11 +24,11 @@ import org.jetbrains.kotlin.resolve.DescriptorUtils
 import org.jetbrains.kotlin.resolve.descriptorUtil.fqNameSafe
 import org.jetbrains.kotlin.types.KotlinType
 import org.jetbrains.kotlin.types.typeUtil.supertypes
-import kotlin.reflect.KClass
 
 /**
  * Thanks Anvil developers,
- * From https://github.com/square/anvil/blob/1bd03e885939a40bf3313f1a67b0de0178d43694/compiler/src/main/java/com/squareup/anvil/compiler/codegen/PsiUtils.kt
+ * This file has been augmented, but retains quite a bit of code that was originally written by developers on the
+ * Anvil project: https://github.com/square/anvil/blob/1bd03e885939a40bf3313f1a67b0de0178d43694/compiler/src/main/java/com/squareup/anvil/compiler/codegen/PsiUtils.kt
  */
 fun PsiElement.requireFqName(
     module: ModuleDescriptor

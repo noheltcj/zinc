@@ -8,11 +8,10 @@ object Main {
     @JvmStatic
     fun main(vararg args: String) {
         val helloWorld = buildHello {
-            id(randomId())
+            id(randomStringProperty)
             label("Hello")
             world(
                 buildWorld {
-                    id(randomId())
                     label("World")
                 }
             )
@@ -21,5 +20,6 @@ object Main {
         println(helloWorld)
     }
 
-    private fun randomId() = UUID.randomUUID().toString()
+    val randomStringProperty get() = UUID.randomUUID().toString()
+    fun randomStringFunction() = UUID.randomUUID().toString()
 }

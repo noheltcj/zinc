@@ -5,14 +5,13 @@ import com.noheltcj.zinc.compiler.plugin.compilation.extension.requireFqName
 import java.io.File
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
 import org.jetbrains.kotlin.idea.KotlinFileType
-import org.jetbrains.kotlin.psi.KtBlockStringTemplateEntry
 import org.jetbrains.kotlin.psi.KtClassOrObject
 import org.jetbrains.kotlin.psi.KtFile
 import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtParameter
-import org.jetbrains.kotlin.psi.KtStringTemplateExpression
 import org.jetbrains.kotlin.psi.KtUserType
-import org.jetbrains.kotlin.psi.psiUtil.getPossiblyQualifiedCallExpression
+import org.jetbrains.kotlin.psi.psiUtil.getQualifiedExpressionForReceiver
+import org.jetbrains.kotlin.psi.psiUtil.getQualifiedExpressionForSelector
 import org.jetbrains.kotlin.resolve.BindingContext
 
 class DataClassBuilderGenerator : CodeGenerator {
@@ -60,7 +59,7 @@ class DataClassBuilderGenerator : CodeGenerator {
                 // Filter to discoverable names only
                 ktClass.name
                     ?.filter { it.isLetterOrDigit() }
-                    ?.takeIf { it.count() > 0 }
+                    ?.takeIf { it.isNotEmpty() }
                     ?.let { true }
                     ?: false
             }
@@ -113,6 +112,7 @@ ${classSource(ktClass)}
             }
             .plus("import com.noheltcj.zinc.core.BuilderProperty")
             .plus("import com.noheltcj.zinc.core.ZincBuilder")
+            .plus(psiClass.containingKtFile.importDirectives.map { it.text })
             .distinct()
             .sorted()
             .joinToString(separator = "\n")
@@ -200,7 +200,8 @@ ${classSource(ktClass)}
                 default = param.defaultValue
                     ?.let { defaultExpression ->
                         ConstructorParameterMetadata.DefaultValue.Some(
-                            expression = defaultExpression.getPossiblyQualifiedCallExpression()?.text
+                            expression = defaultExpression.getQualifiedExpressionForSelector()?.text
+                                ?: defaultExpression.getQualifiedExpressionForReceiver()?.text
                                 ?: defaultExpression.text
                         )
                     }
@@ -208,26 +209,16 @@ ${classSource(ktClass)}
             )
         }
 
-    private fun extractAdditionalParameterImports(module: ModuleDescriptor, ktParameter: KtParameter): List<String> =
+    private fun extractAdditionalParameterImports(module: ModuleDescriptor, ktParameter: KtParameter): Sequence<String> =
         ktParameter.defaultValue
             ?.let { defaultExpression ->
-                when (defaultExpression) {
-                    is KtStringTemplateExpression -> {
-                        defaultExpression.entries
-                            .filterIsInstance<KtBlockStringTemplateEntry>()
-                            .flatMap { blockEntry ->
-                                val result = blockEntry.recurseTreeForInstancesOf<KtNameReferenceExpression>()
-                                result
-                            }
-                            .mapNotNull { ktNameReferenceExpression ->
-                                kotlin.runCatching { "import ${ktNameReferenceExpression.requireFqName(module)}" }
-                                    .getOrNull()
-                            }
+                defaultExpression.recurseTreeForInstancesOf<KtNameReferenceExpression>()
+                    .mapNotNull { expression ->
+                        kotlin.runCatching { "import ${expression.requireFqName(module)}" }
+                            .getOrNull()
                     }
-                    else -> emptyList()
-                }
             }
-            ?: emptyList()
+            ?: emptySequence()
 
     private data class ConstructorParameterMetadata(
         val propertyName: String,
