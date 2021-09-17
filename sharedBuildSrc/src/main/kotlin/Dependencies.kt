@@ -7,8 +7,6 @@ object Dependencies {
 
     val plugins = Plugins
     object Plugins {
-        const val idea = "idea"
-
         const val kotlinGradle= "org.jetbrains.kotlin:kotlin-gradle-plugin:${Versions.kotlin}"
 
         const val mavenPublish = "com.vanniktech.maven.publish"
@@ -29,6 +27,10 @@ object Dependencies {
 
         val google = Google
         object Google {
+            val android = Android
+            object Android {
+                const val gradleApi = "com.android.tools.build:gradle-api:7.0.2"
+            }
             val auto = AutoService
             object AutoService {
                 const val annotations = "com.google.auto.service:auto-service-annotations:${Versions.autoService}"

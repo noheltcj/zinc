@@ -19,12 +19,12 @@ class GlobalDefaultsPlugin : Plugin<Project> {
         target.repositories {
             mavenCentral()
             mavenLocal()
+            google()
         }
 
         target.plugins {
             apply(Dependencies.targets.jvm)
 
-            apply(Dependencies.plugins.idea)
             apply(Dependencies.plugins.ktlint)
         }
 

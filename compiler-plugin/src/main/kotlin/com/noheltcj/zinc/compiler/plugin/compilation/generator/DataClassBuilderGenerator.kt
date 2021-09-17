@@ -105,6 +105,7 @@ ${classSource(ktClass)}
     private fun importsSource(module: ModuleDescriptor, psiClass: KtClassOrObject) =
         filterToKtUserTypeConstructorParams(psiClass)
             .asSequence()
+            // TODO: Resolve case where generic is used in constructor
             .map { "import ${requireNotNull(it.typeReference).requireFqName(module)}" to it }
             .flatMap { (import, parameter) ->
                 extractAdditionalParameterImports(module, parameter)

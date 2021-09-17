@@ -3,10 +3,11 @@ package com.noheltcj.zinc.gradle.plugin
 import java.io.File
 import org.gradle.api.Project
 import org.gradle.api.provider.Provider
+import org.jetbrains.kotlin.gradle.dsl.KotlinProjectExtension
 import org.jetbrains.kotlin.gradle.plugin.FilesSubpluginOption
+import org.jetbrains.kotlin.gradle.plugin.KotlinBasePluginWrapper
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilation
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin
-import org.jetbrains.kotlin.gradle.plugin.KotlinSourceSet
 import org.jetbrains.kotlin.gradle.plugin.SubpluginArtifact
 import org.jetbrains.kotlin.gradle.plugin.SubpluginOption
 
@@ -44,14 +45,6 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
         val project = kotlinCompilation.target.project
         val extension = project.extensions.findByType(ZincGradleExtension::class.java) ?: ZincGradleExtension()
 
-        val newlyConfiguredSourceSets = configureApplicableSourceSets(
-            compilation = kotlinCompilation,
-            existingSourceSets = extension.configuredSourceSets,
-            includedSourceSetNames = extension.productionSourceSetNames
-        )
-
-        extension.configuredSourceSets += newlyConfiguredSourceSets
-
         kotlinCompilation.dependencies {
             implementation("com.noheltcj.zinc:core:0.1.0")
         }
@@ -64,50 +57,39 @@ class ZincGradlePlugin : KotlinCompilerPluginSupportPlugin {
                 ),
                 FilesSubpluginOption(
                     key = "generated_sources_directory",
-                    files = newlyConfiguredSourceSets.map { it.generatedSourcesDirectory }
+                    files = extension.configuredSourceSets.map { it.generatedSourcesDirectory }
                 )
             )
         }
     }
 
     override fun apply(target: Project): Unit = with(target) {
-        extensions.create("zinc", ZincGradleExtension::class.java)
+        val zincExtension = extensions.create("zinc", ZincGradleExtension::class.java)
+
+        plugins.withType(KotlinBasePluginWrapper::class.java) {
+            if (zincExtension.enabled) {
+                val kotlinExtension = extensions.getByType(KotlinProjectExtension::class.java)
+                kotlinExtension.sourceSets.forEach { sourceSet ->
+                    val sourceDescriptor = createSourceSetDescriptor(buildDir, sourceSet.name)
+                    if (zincExtension.productionSourceSetNames.contains(sourceSet.name)) {
+                        if (zincExtension.configuredSourceSets.add(sourceDescriptor)) {
+                            sourceSet.kotlin.srcDir(sourceDescriptor.generatedSourcesDirectory)
+                        }
+                    }
+                }
+            }
+        }
     }
 
-    private fun configureApplicableSourceSets(
-        compilation: KotlinCompilation<*>,
-        existingSourceSets: Set<ZincSourceSetDescriptor>,
-        includedSourceSetNames: Set<String>
-    ): Set<ZincSourceSetDescriptor> =
-        compilation.allKotlinSourceSets
-            .asSequence()
-            .plus(compilation.defaultSourceSet)
-            .map { detectedSourceSet ->
-                createSourceSetDescriptor(
-                    projectBuildDir = compilation.target.project.buildDir,
-                    sourceSet = detectedSourceSet
-                ) to detectedSourceSet
-            }
-            .filter { (descriptor, _) ->
-                includedSourceSetNames.contains(descriptor.name) && !existingSourceSets.contains(descriptor)
-            }
-            .onEach { (descriptor, correspondingSourceSet) ->
-                println(
-                    "Adding generated sources at ${descriptor.generatedSourcesDirectory} to newly configured source " +
-                        "set: ${correspondingSourceSet.name}"
-                )
-                correspondingSourceSet.kotlin.srcDir(descriptor.generatedSourcesDirectory)
-            }
-            .map { (descriptor, _) -> descriptor }
-            .toSet()
-
-    private fun createSourceSetDescriptor(projectBuildDir: File, sourceSet: KotlinSourceSet) = ZincSourceSetDescriptor(
-        name = sourceSet.name,
+    private fun createSourceSetDescriptor(projectBuildDir: File, sourceSetName: String) = ZincSourceSetDescriptor(
+        name = zincProdSourceSetName(sourceSetName),
         generatedSourcesDirectory = File(
             projectBuildDir,
-            "zinc${File.separator}generated${File.separator}${sourceSet.name}${File.separator}prod${File.separator}"
+            "zinc${File.separator}generated${File.separator}${sourceSetName}${File.separator}prod${File.separator}"
         )
     )
+
+    private fun zincProdSourceSetName(shadowedSourceSetName: String) = "zinc${shadowedSourceSetName.capitalize()}Prod"
 
     data class ZincSourceSetDescriptor(
         val name: String,
